@@ -1,44 +1,61 @@
 import { useEffect, useState } from "react";
-import type { Schema } from "../amplify/data/resource";
-import { generateClient } from "aws-amplify/data";
 import { useAuthenticator } from '@aws-amplify/ui-react';
-const client = generateClient<Schema>();
 
 function App() {
 
   const { user, signOut } = useAuthenticator();
 
-  const [todos, setTodos] = useState<Array<Schema["Todo"]["type"]>>([]);
+  const [details, setDetails] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
+  // Call the getdetailsFunction Lambda on component mount
   useEffect(() => {
-    client.models.Todo.observeQuery().subscribe({
-      next: (data) => setTodos([...data.items]),
-    });
+    fetchDetails();
   }, []);
 
-  function createTodo() {
-    client.models.Todo.create({ content: window.prompt("Todo content") });
-  }
-
-    
-  function deleteTodo(id: string) {
-    client.models.Todo.delete({ id })
+  async function fetchDetails() {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch('/getdetailsFunction', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({}),
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      setDetails(data.data || data);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Unknown error');
+      console.error('Error fetching details:', err);
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
     <main>
-      <h1>{user?.signInDetails?.loginId}'s todos</h1>
-      <h2>Amplify + Vite + React</h2>
-      <button onClick={createTodo}>+ new</button>
-      <ul>
-        {todos.map((todo) => (
-          <li
-            onClick={() => deleteTodo(todo.id)}
-            key={todo.id}>{todo.content}</li>
-        ))}
-      </ul>
-      <div>
-        🥳 App successfully hosted. Try creating a new todo.
+      <h1>{user?.signInDetails?.loginId}</h1>
+      <h2>Amplify + Vite + React (Lambda-powered)</h2>
+      
+      <button onClick={fetchDetails} disabled={loading}>
+        {loading ? 'Loading...' : 'Fetch Details'}
+      </button>
+
+      {error && <p style={{ color: 'red' }}>Error: {error}</p>}
+
+      {details && (
+        <div style={{ marginTop: '1rem', padding: '1rem', border: '1px solid #ccc' }}>
+          <h3>Details from Lambda:</h3>
+          <pre>{JSON.stringify(details, null, 2)}</pre>
+        </div>
+      )}
+
+      <div style={{ marginTop: '2rem' }}>
+        🥳 App successfully hosted. Lambda function is replacing the database.
         <br />
         <a href="https://docs.amplify.aws/react/start/quickstart/#make-frontend-updates">
           Review next step of this tutorial.
