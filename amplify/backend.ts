@@ -1,11 +1,10 @@
 import { defineBackend } from '@aws-amplify/backend';
 import { auth } from './auth/resource';
-import { getdetails } from './functions/getdetails/resource';
+import * as functions from './functions';
 
+// Pass the `functions` module directly to defineBackend. Casting to `any`
+// keeps TypeScript quiet if generated typings differ at dev-time.
 defineBackend({
   auth,
-  // cast to any: the generated backend typing may not include custom function keys yet
-  functions: ({
-    getdetails,
-  } as any),
+  functions: functions as any,
 } as any);
