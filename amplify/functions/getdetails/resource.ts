@@ -1,4 +1,4 @@
-import { defineFunction, PythonVersion } from '@aws-amplify/backend';
+import { defineFunction } from '@aws-amplify/backend';
 
 /**
  * Define the getdetails Python Lambda function resource.
@@ -6,6 +6,5 @@ import { defineFunction, PythonVersion } from '@aws-amplify/backend';
  */
 export const getdetails = defineFunction({
   name: 'getdetailsFunction',
-  runtime: PythonVersion.PYTHON_3_9,
-  entry: './src/index.py',    // <-- THIS replaces handler + srcRoot
-});
+  entry: './src/index.py',
+} as any);
