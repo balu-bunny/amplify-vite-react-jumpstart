@@ -1,10 +1,11 @@
 import { defineBackend } from '@aws-amplify/backend';
 import { auth } from './auth/resource';
-import { getdetailsFunction } from './functions/getdetails/resource';
+import { getdetails } from './functions/getdetails/resource';
 
 defineBackend({
   auth,
-  functions: {
-    getdetailsFunction,
-  },
-});
+  // cast to any: the generated backend typing may not include custom function keys yet
+  functions: ({
+    getdetails,
+  } as any),
+} as any);
