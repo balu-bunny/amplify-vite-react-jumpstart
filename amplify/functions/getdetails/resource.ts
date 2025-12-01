@@ -7,6 +7,5 @@ import { defineFunction, PythonVersion } from '@aws-amplify/backend';
 export const getdetails = defineFunction({
   name: 'getdetailsFunction',
   runtime: PythonVersion.PYTHON_3_9,
-  handler: 'index.handler',
-  srcRoot: './src',
+  entry: './src/index.py',    // <-- THIS replaces handler + srcRoot
 });
