@@ -7,4 +7,4 @@ import { defineFunction } from '@aws-amplify/backend';
 export const getdetails = defineFunction({
   name: 'getdetailsFunction',
   entry: './src/index.py',
-} as any);
+});
