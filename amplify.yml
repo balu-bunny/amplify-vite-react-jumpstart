@@ -9,7 +9,7 @@ frontend:
   phases:
     preBuild:
       commands:
-        - npx amplify generate outputs
+        - npx ampx generate outputs
 
     build:
       commands:
